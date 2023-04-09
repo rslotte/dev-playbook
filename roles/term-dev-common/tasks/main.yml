@@ -1,0 +1,62 @@
+---
+- name: Set fact
+  set_fact: my_user="{{ ansible_user }}"
+
+- name: Cloning oh-my-zsh
+  git:
+    repo: https://github.com/robbyrussell/oh-my-zsh
+    dest: ~/.oh-my-zsh
+
+- name: Creating new ~/.zshrc
+  copy:
+    src: files/zshrc.zsh-template
+    dest: ~/.zshrc
+
+- name: Change user shell to zsh
+  user:
+    name: "{{ my_user }}"
+    shell: /bin/zsh
+  become: yes
+
+- name: Ensures ~/.config/nvim dir exists
+  file:
+    path: ~/.config/nvim
+    state: directory
+    recurse: yes
+
+- name: Ensures ~/.local/share/nvim/site/autoload dir exists
+  file:
+    path: ~/.local/share/nvim/site/autoload
+    state: directory
+    recurse: yes
+
+- name: Download plug.vim
+  get_url:
+    url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    dest: ~/.local/share/nvim/site/autoload/plug.vim
+
+- name: Customise nvim
+  copy:
+    src: files/nvim-init.vim
+    dest: ~/.config/nvim/init.vim
+
+- name: Clone nord-gnome-terminal theme
+  git:
+    repo: https://github.com/arcticicestudio/nord-gnome-terminal.git
+    dest: /tmp/nord-gnome-terminal
+
+- name: Run the nord theme install script
+  script: /tmp/nord-gnome-terminal/src/nord.sh
+
+- name: Ensure the neovim Python3 module is installed
+  pip:
+    name: neovim
+    executable: pip3
+    extra_args: --user
+
+- name: Ensure AWS CLI is installed and updated
+  pip:
+    name: awscli
+    executable: pip3
+    extra_args: "--upgrade --user"
+

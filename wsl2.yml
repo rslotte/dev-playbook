@@ -1,0 +1,6 @@
+---
+- name: Setup WSL2 environment
+  hosts: 127.0.0.1
+  roles:
+    - term-dev-wsl2
+

@@ -1,0 +1,16 @@
+---
+- name: Set fact
+  set_fact: my_user="{{ ansible_user }}"
+
+- name: Update package list
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+- name: Upgrade all packages to the latest version
+  apt:
+    name: "*"
+    state: latest
+    force_apt_get: yes
+  become: yes
